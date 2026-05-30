@@ -1,5 +1,4 @@
 import src.utils.env
-
 import sys
 import cv2
 
@@ -11,6 +10,7 @@ from src.config.config import load_config
 from src.recognition.database import (
     create_user,
     save_embedding,
+    load_embeddings,
     list_users,
     remove_user,
     user_exists,
@@ -19,6 +19,8 @@ from src.recognition.embedder import get_embedding
 from src.auth.authenticator import verify_user
 
 SAMPLES_REQUIRED = 10
+
+
 def _open_camera() -> cv2.VideoCapture:
     config = load_config()
     index = config.get("camera_index")
@@ -30,6 +32,8 @@ def _open_camera() -> cv2.VideoCapture:
         print(f"Could not open camera {index}.")
         sys.exit(1)
     return cap
+
+
 def cmd_add(username: str) -> None:
     if user_exists(username):
         print(f"User '{username}' already exists. Remove them first to re-enroll.")
@@ -68,6 +72,8 @@ def cmd_add(username: str) -> None:
     else:
         print("Enrollment failed. Please try again.")
         remove_user(username)
+
+
 def cmd_verify() -> None:
     print("\033[32mLook into the camera...\033[0m")
     result = verify_user()
@@ -75,6 +81,8 @@ def cmd_verify() -> None:
         print(f"Authenticated: {result.username}")
     else:
         print("Authentication failed.")
+
+
 def cmd_list() -> None:
     users = list_users()
     if not users:
@@ -84,6 +92,8 @@ def cmd_list() -> None:
     for username in users:
         embeddings = load_embeddings(username)
         print(f"  {username}  ({len(embeddings)} samples)")
+
+
 def cmd_remove(username: str) -> None:
     if not user_exists(username):
         print(f"User '{username}' not found.")
@@ -94,6 +104,8 @@ def cmd_remove(username: str) -> None:
         print(f"User '{username}' removed.")
     else:
         print("Cancelled.")
+
+
 def main() -> None:
     try:
         _main()
@@ -140,6 +152,8 @@ def _main() -> None:
         cmd_remove(username)
     else:
         print(f"Unknown command: '{command}'")
+
+
 if __name__ == "__main__":
     try:
         main()
