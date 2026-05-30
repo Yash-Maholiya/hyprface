@@ -16,6 +16,7 @@ dist/
 # Testing
 .pytest_cache/
 .coverage
+.coverage.*
 htmlcov/
 
 # IDEs
@@ -28,17 +29,6 @@ Thumbs.db
 
 # Logs
 *.log
-
-# Local Config
-config/config.json
-
-# InsightFace Models
-data/models/*
-data/models/.gitkeep
-
-# User Face Data
-data/users/*
-!data/users/.gitkeep
 
 # Temporary Files
 *.tmp
@@ -53,6 +43,19 @@ data/users/*
 # Ruff
 .ruff_cache/
 
-# Coverage
-.coverage.*pam/pam_hyprface.so
+# Local Config
+config/config.json
+
+# InsightFace Models
+data/models/*
 !data/models/.gitkeep
+
+# User Face Data
+data/users/*
+!data/users/.gitkeep
+
+# Compiled PAM module
+pam/pam_hyprface.so
+
+# Daemon script
+hyprface-daemon.sh
