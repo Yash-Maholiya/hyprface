@@ -2,23 +2,21 @@ import src.utils.env
 
 import sys
 import cv2
-import numpy as np
 
 from src.camera.manager import select_camera
 from src.camera.capture import start_camera
 from src.camera.doctor import doctor
 from src.config.config import load_config
 
-from src.recognition.embedder import get_embedding
 from src.recognition.database import (
     create_user,
     save_embedding,
-    load_embeddings,
     list_users,
     remove_user,
     user_exists,
 )
-from src.recognition.matcher import find_best_match
+from src.recognition.embedder import get_embedding
+from src.auth.authenticator import verify_user
 
 SAMPLES_REQUIRED = 10
 def _open_camera() -> cv2.VideoCapture:
@@ -71,42 +69,12 @@ def cmd_add(username: str) -> None:
         print("Enrollment failed. Please try again.")
         remove_user(username)
 def cmd_verify() -> None:
-    users = list_users()
-    if not users:
-        print("No enrolled users. Run: python -m src.cli.main add <username>")
-        return
-
-    all_embeddings = {u: load_embeddings(u) for u in users}
-
     print("\033[32mLook into the camera...\033[0m")
-    cap = _open_camera()
-
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            print("Camera read failed.")
-            break
-
-        embedding = get_embedding(frame)
-
-        if embedding is not None:
-            matched_user, score = find_best_match(
-                np.array(embedding, dtype=np.float32),
-                all_embeddings,
-            )
-            cap.release()
-
-            if matched_user:
-                print(f"Match     : {matched_user}")
-                print(f"Confidence: {score:.2f}")
-            else:
-                print("Authentication failed.")
-                print(f"Best score: {score:.2f}")
-            return
-
-        cv2.waitKey(1)
-
-    cap.release()
+    result = verify_user()
+    if result.success:
+        print(f"Authenticated: {result.username}")
+    else:
+        print("Authentication failed.")
 def cmd_list() -> None:
     users = list_users()
     if not users:
