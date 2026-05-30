@@ -54,4 +54,4 @@ data/users/*
 .ruff_cache/
 
 # Coverage
-.coverage.*
+.coverage.*pam/pam_hyprface.so
