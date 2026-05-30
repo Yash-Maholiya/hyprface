@@ -26,7 +26,7 @@ def create_user(username: str) -> Path:
 
     profile = {
         "username": username,
-        "created_at": datetime.utcnow().isoformat(),
+        "created_at": datetime.now().astimezone().isoformat(),
         "samples": 0,
         "model": "buffalo_l"
     }
