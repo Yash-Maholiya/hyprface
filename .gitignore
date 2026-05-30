@@ -55,3 +55,4 @@ data/users/*
 
 # Coverage
 .coverage.*pam/pam_hyprface.so
+!data/models/.gitkeep
