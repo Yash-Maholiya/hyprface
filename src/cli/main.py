@@ -17,6 +17,7 @@ from src.recognition.database import (
 )
 from src.recognition.embedder import get_embedding
 from src.auth.authenticator import verify_user
+from src.service.client import request_auth
 
 SAMPLES_REQUIRED = 10
 
@@ -117,7 +118,7 @@ def _main() -> None:
     if len(sys.argv) < 2:
         print(
             "Usage: python -m src.cli.main "
-            "[scan|doctor|capture|add|verify|list|remove]"
+            "[scan|doctor|capture|add|verify|list|remove|start|auth]"
         )
         return
 
@@ -150,6 +151,15 @@ def _main() -> None:
             print("Username cannot be empty.")
             return
         cmd_remove(username)
+    elif command == "start":
+        from src.service.daemon import run
+        run()
+    elif command == "auth":
+        success = request_auth()
+        if success:
+            print("Authenticated.")
+        else:
+            print("Authentication failed.")
     else:
         print(f"Unknown command: '{command}'")
 
