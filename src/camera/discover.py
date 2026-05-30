@@ -4,11 +4,12 @@ from dataclasses import dataclass
 
 @dataclass
 class CameraInfo:
+    index: int
     device: str
     card_type: str
     is_ir: bool
 
-def get_card_type(device: str) -> str:
+def get_card_type(device):
     try:
         output = subprocess.check_output(
             ["v4l2-ctl", "-d", device, "--all"],
@@ -29,10 +30,14 @@ def discover_cameras():
     cameras = []
 
     for dev in sorted(Path("/dev").glob("video*")):
+        
+        index = int(dev.name.replace("video", ""))
+        
         card_type = get_card_type(str(dev))
 
         cameras.append(
             CameraInfo(
+                index=index,
                 device=str(dev),
                 card_type=card_type,
                 is_ir="ir" in card_type.lower(),
@@ -41,6 +46,7 @@ def discover_cameras():
 
     return cameras  
 
+'''
 def find_preferred_camera():
     cameras = discover_cameras()
 
@@ -54,10 +60,16 @@ def find_preferred_camera():
             return cameras[0]
 
     return None
+'''
 
 if __name__ == "__main__":
-    cameras = discover_cameras()
 
+    cams = discover_cameras()
+
+    for cam in cams:
+        print(cam)
+
+'''
     print("\nDetected Cameras\n")
 
     for cam in cameras:
@@ -73,4 +85,5 @@ if __name__ == "__main__":
         print(f"Device      : {preferred.device}")
         print(f"Card Type   : {preferred.card_type}")
     else:
-        print("No camera dound.")    
+        print("No camera dound.")   
+''' 
